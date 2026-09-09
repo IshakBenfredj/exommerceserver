@@ -1,13 +1,17 @@
-const cron = require('cron')
-const https = require('https')
+import { CronJob } from "cron";
+import https from "https";
 
-const job = new cron.CronJob("*/14 * * * *", function () {
+const job = new CronJob("*/14 * * * *", function () {
+  if (!process.env.API_URL) return;
   https
     .get(process.env.API_URL, (res) => {
-      if (res.statusCode === 100) console.log("GET request sent successfully");
-      else console.log("GET request failed", res.statusCode);
+      if (res.statusCode === 200 || res.statusCode === 100) {
+        console.log("GET request sent successfully");
+      } else {
+        console.log("GET request failed", res.statusCode);
+      }
     })
     .on("error", (e) => console.error("Error while sending request", e));
 });
 
-module.exports = job
+export default job;
