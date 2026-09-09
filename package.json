@@ -17,6 +17,7 @@
     "cloudinary": "^2.11.0",
     "compression": "^1.7.5",
     "cors": "^2.8.5",
+    "cron": "^4.4.0",
     "dotenv": "^16.4.7",
     "expo-server-sdk": "^3.13.0",
     "express": "^4.21.2",
