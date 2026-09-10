@@ -71,6 +71,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", createOrderRouter(io));
 app.use("/api/admin/push-token", pushRoutes);
+app.use("/api/push", pushRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/reviews", reviewRoutes);
