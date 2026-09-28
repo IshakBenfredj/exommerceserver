@@ -28,10 +28,39 @@ router.get('/all', requireAdminAuth, async (req, res) => {
   }
 });
 
+function slugify(text) {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u0621-\u064A-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
+
 // POST /api/categories (Admin)
 router.post('/', requireAdminAuth, async (req, res) => {
   try {
-    const category = new Category(req.body);
+    const data = { ...req.body };
+    data.name_ar = data.name_ar || data.name || data.name_fr || '';
+    data.name_fr = data.name_fr || data.name || '';
+
+    if (!data.name_ar) {
+      return res.status(400).json({ success: false, error: 'اسم التصنيف بالعربية مطلوب' });
+    }
+
+    if (!data.slug || !data.slug.trim()) {
+      const base = slugify(data.name_fr || data.name_ar) || 'category';
+      const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+      data.slug = `${base}-${uniqueSuffix}`;
+    } else {
+      data.slug = slugify(data.slug);
+    }
+
+    const category = new Category(data);
     await category.save();
     res.status(201).json({ success: true, data: category, message: 'تم إنشاء التصنيف بنجاح' });
   } catch (error) {

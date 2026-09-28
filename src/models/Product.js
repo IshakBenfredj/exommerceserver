@@ -34,6 +34,31 @@ const ProductSchema = new Schema({
   features: { type: [String], default: [] },
 }, { timestamps: true });
 
+function slugify(text) {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u0621-\u064A-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
+
+ProductSchema.pre('validate', function (next) {
+  if (!this.name_ar && this.name_fr) {
+    this.name_ar = this.name_fr;
+  }
+  if (!this.slug || !this.slug.trim()) {
+    const base = slugify(this.name_fr || this.name_ar) || 'product';
+    const rand = Math.random().toString(36).substring(2, 7);
+    this.slug = `${base}-${rand}`;
+  }
+  next();
+});
+
 ProductSchema.index({ name_ar: 'text', description_ar: 'text', name_fr: 'text' });
 
 export const Product = mongoose.model('Product', ProductSchema);
